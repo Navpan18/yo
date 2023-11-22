@@ -11,7 +11,7 @@ import subprocess
 # URL of the video you want to download
 video_url = "https://www.youtube.com/watch?v=wYgaOmkNn1M"
 SOCKS_PORT = 9050
-TOR_PATH = os.path.normpath(os.getcwd()+"\\tor\\tor.exe")
+TOR_PATH = os.path.normpath(os.getcwd()+"/tor/tor.exe")
 tor_process = stem.process.launch_tor_with_config(
   config = {
     'SocksPort': str(SOCKS_PORT),
