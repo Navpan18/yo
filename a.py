@@ -1,31 +1,17 @@
-# complete code found in create_basic_tor_proxy.py
-import io
-import os
-import stem.process
-import re
+import time
 import requests
-import json
-from datetime import datetime
-import subprocess
-
-# URL of the video you want to download
-video_url = "https://www.youtube.com/watch?v=wYgaOmkNn1M"
-SOCKS_PORT = 9050
-TOR_PATH = os.path.normpath(os.getcwd()+"/tor/tor.exe")
-tor_process = stem.process.launch_tor_with_config(
-  config = {
-    'SocksPort': str(SOCKS_PORT),
-  },
-  init_msg_handler = lambda line: print(line) if re.search('Bootstrapped', line) else False,
-  tor_cmd = TOR_PATH
-)
-PROXIES = {
+from fake_useragent import UserAgent
+from stem import Signal
+from stem.control import Controller
+proxies = {
     'http': 'socks5://127.0.0.1:9050',
     'https': 'socks5://127.0.0.1:9050'
 }
-response = requests.get("https://api.ipify.org?format=json", proxies=PROXIES)
-result = json.loads(response.content)
-print(result)
-proxy_url=PROXIES['http']
-subprocess.run(["yt-dlp","-g","-f","22", "--proxy",proxy_url, video_url])
-tor_process.kill()
+print("Changing IP Address in every 10 seconds....\n\n")
+while True:
+    headers = { 'User-Agent': UserAgent().random }
+    time.sleep(10)
+    with Controller.from_port(port = 9051) as c:
+        c.authenticate()
+        c.signal(Signal.NEWNYM)
+        print(f"Your IP is : {requests.get('https://ident.me', proxies=proxies, headers=headers).text}  ||  User Agent is : {headers['User-Agent']}")
